@@ -13,7 +13,7 @@ SELECT
 --    , NVL(COMM, 0) COMM
     *
 FROM EMP
-WHERE COMM != 0;
+WHERE COMM = 0 OR COMMM IS NULL;
 
 -- 관리자가 없는 직원 정보 조회
 SELECT
