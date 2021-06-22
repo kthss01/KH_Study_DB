@@ -131,7 +131,7 @@ AND SALARY >= 3500000
 AND SALARY <= 5500000;
 
 -- BETWEEN AND
--- 컬럼명 BETWENN 하한값 AND 상한값
+-- 컬럼명 BETWEEN 하한값 AND 상한값
 -- 하한값 이상 상한값 이하의 값
 -- 비교하려는 값이 지정한 범위 (상한값과 하한값의 경계 포함)
 SELECT
