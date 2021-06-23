@@ -115,3 +115,121 @@ SELECT name FROM Employee ORDER BY name asc;
 -- for employees in Employee having a salary greater than 2000 per month who have been employees for less than 10 months. 
 -- Sort your result by ascending employee_id.
 SELECT name FROM Employee WHERE salary > 2000 and months < 10 ORDER BY employee_id;
+
+-- Japanese Cities' Attributes
+-- Query all attributes of every Japanese city in the CITY table. The COUNTRYCODE for Japan is JPN.
+SELECT * FROM CITY WHERE COUNTRYCODE = 'JPN';
+
+-- Type of Triangle
+-- Write a query identifying the type of each record in the TRIANGLES table using its three side lengths.
+-- 삼각형 성립 조건 두 길이의 합이 가장 큰 길이보다 커야함 (같아도 안됨)
+SELECT 
+    CASE
+        WHEN A + B <= C THEN 'Not A Triangle'
+        WHEN A = B AND B = C THEN 'Equilateral'
+        WHEN A = B OR B = C OR C = A THEN 'Isosceles'
+        ELSE 'Scalene'
+    END RESULT
+FROM TRIANGLES;
+
+-- Revising Aggregations - The Count Function
+-- Query a count of the number of cities in CITY having a Population larger than 100,000.
+SELECT COUNT(*) FROM CITY WHERE POPULATION > 100000;
+
+-- Revising Aggregations - The Sum Function
+-- Query the total population of all cities in CITY where District is California.
+SELECT SUM(POPULATION) FROM CITY WHERE DISTRICT = 'California';
+
+-- Revising Aggregations - Averages
+-- Query the average population of all cities in CITY where District is California.
+SELECT AVG(POPULATION) FROM CITY WHERE DISTRICT = 'California';
+
+-- Average Population
+-- Query the average population for all cities in CITY, rounded down to the nearest integer.
+SELECT ROUND(AVG(POPULATION)) FROM CITY;
+
+-- Japan Population
+-- Query the sum of the populations for all Japanese cities in CITY. The COUNTRYCODE for Japan is JPN.
+SELECT SUM(POPULATION) FROM CITY WHERE COUNTRYCODE = 'JPN';
+
+-- Population Density Difference
+-- Query the difference between the maximum and minimum populations in CITY.
+SELECT 
+    A.POPULATION - B.POPULATION
+FROM 
+    (SELECT * FROM CITY ORDER BY POPULATION DESC) A
+    , (SELECT * FROM CITY ORDER BY POPULATION ASC) B
+WHERE ROWNUM = 1;
+
+SELECT MAX(Population) - MIN(Population) AS Joke FROM City; -- MIN MAX 함수도 있음 잘 써먹자
+
+-- The Blunder
+-- finding the difference between her miscalculation (using salaries with any zeros removed), and the actual average salary.
+-- Write a query calculating the amount of error (i.e.: actual - miscalculated average monthly salaries), and round it up to the next integer.
+-- round up 무조건 올림 (ceil), round가 반올림, round down이 내림 (floor)
+SELECT CEIL(AVG(Salary)-AVG(REPLACE(Salary,'0',''))) FROM EMPLOYEES;
+
+-- Top Earners
+-- total earnings = salary x months
+-- Write a query to find the maximum total earnings for all employees as well as the total number of employees who have maximum total earnings. 
+-- Then print these values as 2 space-separated integers.
+SELECT
+    *
+FROM 
+    (
+        SELECT 
+            salary * months, COUNT(*) 
+        FROM Employee 
+        GROUP BY salary * months 
+        ORDER BY salary * months DESC
+    )
+WHERE ROWNUM = 1;
+
+-- Weather Observation Station 2
+-- Query the following two values from the STATION table:
+-- The sum of all values in LAT_N rounded to a scale of 2 decimal places.
+-- The sum of all values in LONG_W rounded to a scale of 2 decimal places.
+-- 2 decimal places 소수점 자리 2째 자리
+-- decimal places 소수점
+SELECT ROUND(SUM(LAT_N), 2), ROUND(SUM(LONG_W), 2) FROM STATION;
+
+-- Weather Observation Station 13
+-- Query the sum of Northern Latitudes (LAT_N) from STATION 
+-- having values greater than 38.7880 and less than 137.2345. Truncate your answer to 4 decimal places.
+SELECT 
+    TRUNC(SUM(LAT_N), 4) 
+FROM STATION 
+WHERE 1=1
+AND LAT_N > 38.7880
+AND LAT_N < 137.2345;
+
+-- Weather Observation Station 14
+-- Query the greatest value of the Northern Latitudes (LAT_N) from STATION that is less than 137.2345. Truncate your answer to 4 decimal places.
+SELECT TRUNC(MAX(LAT_N), 4) FROM STATION WHERE LAT_N < 137.2345;
+
+-- Weather Observation Station 15
+-- Query the Western Longitude (LONG_W) for the largest Northern Latitude (LAT_N) in STATION that is less than 137.2345. Round your answer to 4 decimal places.
+SELECT 
+    ROUND(LONG_W, 4) 
+FROM 
+    (  
+        SELECT * FROM STATION WHERE LAT_N < 137.2345 ORDER BY LAT_N DESC
+    )
+WHERE ROWNUM = 1;
+
+SELECT 
+    ROUND(LONG_W, 4)
+FROM STATION
+WHERE 1=1
+AND LAT_N = (SELECT MAX(LAT_N) FROM STATION WHERE LAT_N < 137.2345);
+
+-- Weather Observation Station 16
+-- Query the smallest Northern Latitude (LAT_N) from STATION that is greater than 38.7780. Round your answer to 4 decimal places.
+SELECT ROUND(MIN(LAT_N), 4) FROM STATION WHERE LAT_N > 38.7780;
+
+-- Weather Observation Station 17
+-- Query the Western Longitude (LONG_W)where the smallest Northern Latitude (LAT_N) in STATION is greater than 38.7780. Round your answer to 4 decimal places.
+SELECT 
+    ROUND(LONG_W, 4)
+FROM STATION
+WHERE LAT_N = (SELECT MIN(LAT_N) FROM STATION WHERE LAT_N > 38.7780);
