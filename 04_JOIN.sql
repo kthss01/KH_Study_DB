@@ -46,7 +46,6 @@ WHERE A.JOB_CODE = B.JOB_CODE; -- 별칭을 사용해서 해결
 
 -- ANSI 표준구문
 -- 연결에 사용할 컬럼명이 같은 경우 USING(컬럼명)을 사용함.
-
 SELECT 
     EMP_ID
     , EMP_NAME
