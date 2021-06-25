@@ -112,7 +112,7 @@ AND DEPT_TITLE LIKE '%해외영업%';
 SELECT
     A.EMP_NAME
     , A.BONUS
-    , A.SALARY
+    , A.SALARY * 12 연봉
     , B.DEPT_TITLE
     , C.LOCAL_NAME
 FROM EMPLOYEE A
