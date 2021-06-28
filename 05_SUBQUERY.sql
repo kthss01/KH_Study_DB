@@ -517,3 +517,281 @@ FROM (  SELECT
         INNER JOIN JOB C ON A.JOB_CODE = C.JOB_CODE) A
 WHERE A.부서명 = '인사관리부';
     
+
+/*우선 TOP-N 분석에 대해 알아보자
+# TOP-N 분석이란?
+	TOP-N 질의는 columns에서 가장 큰 n개의 값 또는 가장 작은 n개의 값을 요청할 때
+	사용됨
+	예) 가장 적게 팔린 제품 10가지는? 또는 회사에서 가장 소득이 많은 사람 3명은?
+*/
+-- 인라인뷰를 활용한 TOP-N분석
+-- ORDER BY 한 결과에 ROWNUM을 붙임
+-- ROWNUM은 행 번호를 의미함
+
+--ex) --TOP-N 분석 : 회사에서 연봉이 가장 높은 사람 5명은?
+
+SELECT
+    ROWNUM
+    , EMP_NAME
+    , SALARY
+FROM EMPLOYEE
+ORDER BY SALARY DESC; -- ORDER BY 전에 ROWNUM이 이미 번호가 매겨져있음
+
+SELECT
+    ROWNUM
+    , EMP_NAME
+    , SALARY
+FROM EMPLOYEE
+WHERE SALARY >= 3700000
+ORDER BY SALARY DESC; -- 하드코딩으로 하면 연봉이 달라지면 또 달라져서 문제
+
+SELECT 
+    ROWNUM
+    , EMP_NAME
+    , SALARY
+FROM (
+        SELECT
+            A.*
+        FROM EMPLOYEE A
+        ORDER BY SALARY DESC
+    ) A
+WHERE ROWNUM <= 5;
+
+-- 급여 평균 3위 안에드는 부서의
+-- 부서코드와 부서명, 평균 급여를 조회하기
+SELECT
+    A.DEPT_CODE
+    , B.DEPT_TITLE
+    , A.AVG
+FROM (
+        SELECT
+            DEPT_CODE
+            , FLOOR(AVG(SALARY)) AVG
+        FROM EMPLOYEE 
+        GROUP BY DEPT_CODE
+        ORDER BY AVG(SALARY) DESC
+        ) A
+JOIN DEPARTMENT B ON A.DEPT_CODE = B.DEPT_ID
+WHERE ROWNUM <= 3;
+
+------ 해답
+SELECT
+    A.DEPT_CODE
+    , B.DEPT_TITLE
+    , AVG(A.SALARY) SAL_AVG
+FROM EMPLOYEE A
+JOIN DEPARTMENT B ON A.DEPT_CODE = B.DEPT_ID
+GROUP BY A.DEPT_CODE, B.DEPT_TITLE
+ORDER BY SAL_AVG DESC;
+
+SELECT
+    A.*
+FROM (  SELECT
+            A.DEPT_CODE
+            , B.DEPT_TITLE
+            , AVG(A.SALARY) SAL_AVG
+        FROM EMPLOYEE A
+        JOIN DEPARTMENT B ON A.DEPT_CODE = B.DEPT_ID
+        GROUP BY A.DEPT_CODE, B.DEPT_TITLE
+        ORDER BY SAL_AVG DESC) A
+WHERE ROWNUM <= 3;
+
+-- 직원 정보에서 급여를 가장 많이 받는 순으로 이름, 급여, 순위 조회
+--   RANK() OVER(정렬기준) / DENSE_RANK() OVER(정렬기준)
+--    보다 쉽게 순위 매기는 함수
+-- RANK() OVER : 동일한 순위 이후의 등수를 동일한 인원 수 만큼 건너뛰고 순위 계산
+--               EX) 공동 1위가 2명이면 다음 순위는 2위가 아니라 3위
+-- DENSE_RANK() OVER : 동일한 순위 이후의 등수를 무조건 1씩 증가시키는
+--              EX) 공동 1위가 2명이더라도 다음 순위는 2위
+
+-- 직원 정보에서 급여를 가장 많이 받는 순으로 이름, 급여, 순위 조회
+SELECT
+    EMP_NAME
+    , SALARY
+    , DENSE_RANK() OVER(ORDER BY SALARY DESC) 순위 -- 순위가 순차적으로 나옴 동률일 경우 다음 순위는 그냥 순차적으로 나온단 얘기
+FROM EMPLOYEE;
+
+SELECT
+    EMP_NAME
+    , SALARY
+    , RANK() OVER(ORDER BY SALARY DESC) 순위 -- 순위가 순차적이지 않음 동률일 경우 중복된 수만큼 다음 순위는 증가해서 나옴
+FROM EMPLOYEE;
+
+SELECT 
+    A.*
+FROM (
+        SELECT
+            EMP_NAME
+            , SALARY
+            , RANK() OVER(ORDER BY SALARY DESC) 순위
+        FROM EMPLOYEE
+        ) A
+WHERE A.순위 <= 5;
+
+-- 이건 안됨 순위를 WHERER에서 모름
+--SELECT
+--    EMP_NAME
+--    , SALARY
+--    , RANK() OVER(ORDER BY SALARY DESC) 순위
+--FROM EMPLOYEE
+--WHERE 순위 <= 5;        
+
+
+-- 직원 테이블에서 보너스 포함한 연봉이 높은 5명의 ( RANK() OVER 사용 )
+-- 사번, 이름, 부서명, 직급명, 입사일을 조회하세요
+-- 연봉 참 (A.SALARY + (A.SALARY * NVL(A.BONUS, 0))) * 12
+
+SELECT
+    A.EMP_ID
+    , A.EMP_NAME
+    , B.DEPT_TITLE
+    , C.JOB_NAME
+    , (SALARY + (SALARY * NVL(BONUS, 0))) * 12 연봉
+    , RANK() OVER(ORDER BY (SALARY + (SALARY * NVL(BONUS, 0))) * 12 DESC) 순위
+FROM EMPLOYEE A
+JOIN DEPARTMENT B ON A.DEPT_CODE = B.DEPT_ID
+JOIN JOB C ON A.JOB_CODE = C.JOB_CODE;
+
+SELECT
+    A.EMP_ID
+    , A.EMP_NAME
+    , A.DEPT_TITLE
+    , A.JOB_NAME
+    , A.HIRE_DATE
+    , A.순위
+FROM    (
+            SELECT
+                A.EMP_ID
+                , A.EMP_NAME
+                , B.DEPT_TITLE
+                , C.JOB_NAME
+                , A.HIRE_DATE
+                , (A.SALARY + (A.SALARY * NVL(A.BONUS, 0))) * 12 연봉
+                , RANK() OVER(ORDER BY (A.SALARY + (A.SALARY * NVL(A.BONUS, 0))) * 12 DESC) 순위
+            FROM EMPLOYEE A
+            JOIN DEPARTMENT B ON A.DEPT_CODE = B.DEPT_ID
+            JOIN JOB C ON A.JOB_CODE = C.JOB_CODE
+        ) A
+WHERE A.순위 <= 5;
+
+-- WITH 이름 AS (쿼리문)
+-- 서브쿼리에 이름을 붙여주고 사용시 이름을 사용하게 됨
+-- 인라인뷰로 사용될 서브쿼리에서 이용 됨
+-- 같은 서브쿼리가 여러번 사용될 경우 중복 작성을 줄일 수 있다.
+
+WITH TOPN_SAL AS 
+    (
+        SELECT
+            EMP_ID
+            , EMP_NAME
+            , SALARY
+        FROM EMPLOYEE
+        ORDER BY 3 DESC
+    )
+SELECT 
+    ROWNUM
+    , EMP_NAME
+    , SALARY
+FROM TOPN_SAL;
+
+
+-- 부서별 급여 합계가 전체 급여의 총합의 20%보다 많은
+-- 부서의 부서명과, 부서별 급여 합계 조회
+
+-- 1번째 방법 HAVING
+SELECT
+    DEPT_CODE
+    , DEPT_TITLE
+    , SUM(SALARY)
+FROM EMPLOYEE
+LEFT JOIN DEPARTMENT ON DEPT_CODE = DEPT_ID
+GROUP BY DEPT_CODE, DEPT_TITLE
+HAVING SUM(SALARY) >    (
+                            SELECT SUM(SALARY) * 0.2 
+                            FROM EMPLOYEE
+                        );
+                        
+-- 2번째 방법 - 인라인뷰
+SELECT
+    A.DEPT_TITLE
+    , A.TOTSAL
+FROM    (
+            SELECT
+                DEPT_CODE
+                , DEPT_TITLE
+                , SUM(SALARY)TOTSAL
+            FROM EMPLOYEE
+            LEFT JOIN DEPARTMENT ON DEPT_CODE = DEPT_ID
+            GROUP BY DEPT_CODE, DEPT_TITLE
+        ) A
+WHERE A.TOTSAL >    (
+                        SELECT SUM(SALARY) * 0.2 
+                        FROM EMPLOYEE                        
+                    );
+
+-- 3번째 방법 WITH절 사용
+WITH TOTAL_SAL AS 
+    (
+        SELECT
+            DEPT_CODE
+            , DEPT_TITLE
+            , SUM(SALARY)TOTSAL
+        FROM EMPLOYEE
+        LEFT JOIN DEPARTMENT ON DEPT_CODE = DEPT_ID
+        GROUP BY DEPT_CODE, DEPT_TITLE
+    )
+SELECT
+    A.DEPT_TITLE
+    , A.TOTSAL
+FROM TOTAL_SAL A
+WHERE A.TOTSAL >    (  
+                        SELECT SUM(SALARY) * 0.2 
+                        FROM EMPLOYEE
+                    );
+
+-- WITH 자주 쓰이는 거 설명          
+      
+WITH TOT_SAL AS
+    (
+        SELECT SUM(SALARY) SAL1
+        FROM EMPLOYEE
+    ),
+    AVG_SAL AS
+    (
+        SELECT AVG(SALARY) SAL2
+        FROM EMPLOYEE
+    )
+SELECT
+    '합' COL1
+    , ROUND(S.SAL1, 0) COL2
+FROM TOT_SAL S
+UNION ALL
+SELECT
+    '평균' COL1
+    , ROUND(A.SAL2, 0) COL2
+FROM AVG_SAL A
+UNION ALL
+SELECT 
+    '직원' COL1
+    , SUM(SALARY) COL2
+FROM EMPLOYEE
+WHERE EMP_ID IN (200, 201);
+
+
+
+WITH TOT_SAL AS
+    (
+        SELECT SUM(SALARY) SAL1
+        FROM EMPLOYEE
+    ),
+    AVG_SAL AS
+    (
+        SELECT AVG(SALARY) SAL2
+        FROM EMPLOYEE
+    )
+SELECT
+    A.*
+    , SAL1 합
+    , ROUND(SAL2, 0) 평균
+FROM EMPLOYEE A, TOT_SAL, AVG_SAL;
+    
