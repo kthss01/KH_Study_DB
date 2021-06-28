@@ -16,7 +16,6 @@
 
 
 
-
 -- 도서들에 대한 데이터를 담기위한 도서 테이블(TB_BOOK)
 -- 컬럼 : BK_NO (도서번호) -- 기본키(BOOK_PK)
 --        BK_TITLE (도서명) -- NOT NULL(BOOK_NN_TITLE)
