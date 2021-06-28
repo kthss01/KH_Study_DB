@@ -339,10 +339,10 @@ INSERT INTO USER_TEST
     (5, 'user05', 'pass05', '881215-1234567', '남', '010-1234-5678', '서울시 강남구 역삼동', 'N');
     
     
---PRIMARY KEY(기본키) 제약조건 
+-- PRIMARY KEY(기본키) 제약조건 
 -- : 테이블에서 한행의 정보를 찾기위해 사용할 컬럼을 의미
 -- 테이블에 대한 식별자 역할을 한다. 
--- NOT NULL+ UNIQUE제약조건의 의미
+-- NOT NULL + UNIQUE제약조건의 의미
 -- 한 테이블당 한개만 설정
 -- 컬럼 레벨, 테이블 레벨 둘다 설정 가능함
 -- 한개 컬럼에 설정할수 있고, 여러개 컬럼 묶어서(복합키) 설정 할수 있음 
@@ -407,6 +407,7 @@ SELECT * FROM USER_PRIMARYKEY2;
 
 DESC USER_PRIMARYKEY2;
 
+-- COL COMMENT 확인
 SELECT *
 FROM USER_COL_COMMENTS
 WHERE TABLE_NAME = 'MEMBER';
