@@ -233,3 +233,59 @@ SELECT
     ROUND(LONG_W, 4)
 FROM STATION
 WHERE LAT_N = (SELECT MIN(LAT_N) FROM STATION WHERE LAT_N > 38.7780);
+
+-- Population Census
+-- query the sum of the populations of all cities where the CONTINENT is 'Asia'
+-- Note: CITY.CountryCode and COUNTRY.Code are matching key columns.
+SELECT 
+    SUM(CITY.POPULATION)
+FROM CITY, COUNTRY
+WHERE CITY.COUNTRYCODE = COUNTRY.CODE
+AND COUNTRY.CONTINENT = 'Asia';
+
+-- African Cities
+-- Given the CITY and COUNTRY tables, query the names of all cities where the CONTINENT is 'Africa'.
+-- Note: CITY.CountryCode and COUNTRY.Code are matching key columns.
+SELECT 
+    CITY.NAME
+FROM CITY, COUNTRY
+WHERE CITY.COUNTRYCODE = COUNTRY.CODE
+AND COUNTRY.CONTINENT = 'Africa';
+
+-- Average Population of Each Continent
+-- Given the CITY and COUNTRY tables, query the names of all the continents (COUNTRY.Continent) 
+-- and their respective average city populations (CITY.Population) rounded down to the nearest integer.
+-- Note: CITY.CountryCode and COUNTRY.Code are matching key columns.
+SELECT
+    B.CONTINENT
+    , FLOOR(AVG(A.POPULATION)) AVG
+FROM CITY A, COUNTRY B
+WHERE A.COUNTRYCODE = B.CODE
+GROUP BY B.CONTINENT;
+
+-- Draw The Triangle1
+-- 별찍기 5 4 3 2 1 순으로 P(5)면 5개 P(20) 찍기
+set serveroutput on
+declare
+a number := 20;
+begin
+for i in reverse 1..a
+loop
+dbms_output.put_line(RPAD('* ', (i*2), '* '));
+end loop;
+end;
+/
+-- 참고 ORACLE DB 에는 PL/SQL이라고 해서 프로그래밍언어 역할을 하는게 있음 변수를 만들고 반복문 등을 수행할 수 있음
+
+-- Draw The Triangle 2
+-- 별찍기 1 2 3 4 5 순으로 P(5)면 5개 P(20) 찍기
+SET serveroutput ON
+DECLARE
+    a number := 20;
+BEGIN
+    FOR i IN 1..a
+    LOOP
+        dbms_output.put_line(RPAD('* ', (i*2), '* '));
+    END LOOP;
+END;
+/
