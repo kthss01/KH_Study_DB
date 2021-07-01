@@ -126,6 +126,10 @@ FROM TB_STUDENT
 GROUP BY DEPARTMENT_NO
 ORDER BY 1;
 
+-- COUNT(DECODE(ABSENCE_YN, 'Y', 1, NULL)) 의 부연설명
+-- 만일 ABSENCE_YN의 값이 'Y'였을 경우 COUNT(1)이 되어 갯수를 세게 되고
+--     ABSENCE_YN의 값이 'Y'가 아니였을 경우 COUNT(NULL)이 되어 갯수를 세지 않게되는 원리!!
+
 
 -- 14. 춘 대학교에 다니는 동명이인 학생들의 이름을 찾고자 한다. 어떤 SQL 문장을 사용하면 가능하겠는가?
 SELECT
@@ -146,6 +150,7 @@ SELECT
 FROM TB_GRADE
 WHERE 1=1
 AND STUDENT_NO = 'A112113'
-GROUP BY ROLLUP(SUBSTR(TERM_NO, 1, 4), SUBSTR(TERM_NO, 5, 2));
+GROUP BY ROLLUP(SUBSTR(TERM_NO, 1, 4), SUBSTR(TERM_NO, 5, 2))
+ORDER BY 1;
     
 
