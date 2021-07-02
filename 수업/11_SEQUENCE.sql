@@ -23,9 +23,9 @@ MAXVALUE 310              -- 최대 310
 NOCYCLE                   -- 310 이후에는 증가하지 않고 에러 발생 알림
 NOCACHE;                  -- 캐쉬 사용 안함
   
-  -- NEXTVAL, CURRVAL
-  -- CURRVAL: 현재값을 반환 -- 현재값을 생성한 후에 조회해야함 (시퀀스 생성 후 바로 조회하려고 하면 에러 발생) -> NEXTVAL 한번 해야하는거 같음
-  -- NEXTVAL: 현재 시퀀스의 다음값을 반환
+-- NEXTVAL, CURRVAL
+-- CURRVAL: 현재값을 반환 -- 현재값을 생성한 후에 조회해야함 (시퀀스 생성 후 바로 조회하려고 하면 에러 발생) -> NEXTVAL 한번 해야하는거 같음
+-- NEXTVAL: 현재 시퀀스의 다음값을 반환
   
 SELECT SEQ_EMPID.CURRVAL FROM DUAL; -- 그냥 돌리면 에러, 시작값이 없으므로 NEXTVAL을 무조건 한번 실행한 후 CURRVAL 실행
 SELECT SEQ_EMPID.NEXTVAL FROM DUAL; -- NEXTVAL 한번 돌리면 300이됨

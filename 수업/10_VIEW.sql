@@ -38,7 +38,7 @@ FROM V_RESULT_EMP
 WHERE EMP_ID = 205;
 
 SELECT *
-FROM SYS.USER_VIEWS; -- TEXT에 실행시킨 문장이 들어가 있음
+FROM SYS.USER_VIEWS; -- TEXT 컬럼에 실행시킨 문장이 들어가 있음
 
 COMMIT;
 
