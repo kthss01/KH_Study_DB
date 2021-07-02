@@ -272,6 +272,7 @@ FROM    (
 WHERE ROWNUM = 1;
 -- 다른 방법 있을거 같음 파트에 맞지 않는 해결 방법으로 보임
 
+
 -- 19. 춘 기술대학교의 '환경조경학과'가 속한 같은 계열 학과들의 학과 별 전공과목 평점을 파악하기 위한
 -- 적절한 SQL 문을 찾아내시오. 단, 출력헤더는 "계열 학과명", "전공평점"으로 표시하도록 하고,
 -- 평점은 소수점 한 자리까지만 반올림하여 표시되도록 한다.
@@ -287,10 +288,25 @@ JOIN TB_GRADE C ON B.STUDENT_NO = C.STUDENT_NO
 JOIN TB_CLASS D ON A.DEPARTMENT_NO = D.DEPARTMENT_NO
 WHERE 1=1
 AND A.CATEGORY =    (
-                        SELECT CATEGORY FROM TB_DEPARTMENT WHERE DEPARTMENT_NAME = '환경조경학과'
+                        SELECT CATEGORY FROM TB_DEPARTMENT WHERE DEPARTMENT_NAME LIKE '환경조경%'
                     )
 AND D.CLASS_TYPE LIKE '전공%'
 --AND D.CLASS_TYPE NOT LIKE '전공%'
 GROUP BY A.DEPARTMENT_NAME
 ORDER BY 1;
 -- 답이 안맞음 반올림시 물리학과의 경우 3.3이어야되는데 3.4임 환경조경학과도 3.4이어야되는데 3.5
+-- GRADE로 시작해야하는거 같음
+
+SELECT
+    C.DEPARTMENT_NAME "계열 학과명"
+    , ROUND(AVG(A.POINT), 1) "전공 평점"
+FROM TB_GRADE A
+JOIN TB_CLASS B ON A.CLASS_NO = B.CLASS_NO
+JOIN TB_DEPARTMENT C ON B.DEPARTMENT_NO = C.DEPARTMENT_NO
+WHERE 1=1
+AND C.CATEGORY =    (
+                        SELECT CATEGORY FROM TB_DEPARTMENT WHERE DEPARTMENT_NAME LIKE '환경조경%'
+                    )
+AND B.CLASS_TYPE LIKE '전공%'
+GROUP BY C.DEPARTMENT_NAME
+ORDER BY 1;
