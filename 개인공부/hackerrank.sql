@@ -291,4 +291,139 @@ END;
 /
 
 -- The PADS
--- 
+-- OCCUPATIONS 알파벳 첫단어 순으로 정렬되어 있음 그렇게 AnActorName(A) 이런 형식으로 출력하기
+-- There are a total of [occupation_count] [occupation]s. 오름차순으로
+SELECT
+    Name || '(' || SUBSTR(Occupation, 1, 1) || ')'
+FROM OCCUPATIONS
+ORDER BY NAME ASC;
+
+--SELECT 'There are a total of ' || COUNT(*) || ' doctors.' TOTAL
+--FROM OCCUPATIONS
+--WHERE Occupation = 'Doctor';
+--SELECT 'There are a total of ' || COUNT(*) || ' actors.' TOTAL
+--FROM OCCUPATIONS
+--WHERE Occupation = 'Actor';
+--SELECT 'There are a total of ' || COUNT(*) || ' singers.' TOTAL
+--FROM OCCUPATIONS
+--WHERE Occupation = 'Singer';
+--SELECT 'There are a total of ' || COUNT(*) || ' professors.' TOTAL
+--FROM OCCUPATIONS
+--WHERE Occupation = 'Professor';
+SELECT 'There are a total of ' || COUNT(Occupation) || ' ' || LOWER(Occupation) || 's.' as total
+FROM OCCUPATIONS
+GROUP BY Occupation
+ORDER BY total;
+
+-- Occupations
+-- 직업별로 열로 나올 수 잇게 출력 (이름순)
+-- SELECT Occupation, COUNT(*) FROM OCCUPATIONS GROUP BY Occupation;
+
+--SELECT
+--    D.Name
+--    , P.Name
+--    , S.Name
+--    , A.Name
+--FROM 
+--    (
+--        SELECT ROW_NUMBER() OVER (ORDER BY Name) NUM, Name FROM OCCUPATIONS WHERE Occupation = 'Doctor'
+--    ) D,
+--    (
+--        SELECT ROW_NUMBER() OVER (ORDER BY Name) NUM, Name FROM OCCUPATIONS WHERE Occupation = 'Professor'
+--    ) P,
+--    (
+--        SELECT ROW_NUMBER() OVER (ORDER BY Name) NUM, Name FROM OCCUPATIONS WHERE Occupation = 'Singer'
+--    ) S,
+--    (
+--        SELECT ROW_NUMBER() OVER (ORDER BY Name) NUM, Name FROM OCCUPATIONS WHERE Occupation = 'Actor' ORDER BY 2
+--    ) A
+--WHERE 1=1
+--AND P.NUM = D.NUM(+)
+--AND P.NUM = S.NUM(+)
+--AND P.NUM = A.NUM(+);
+
+-- 분석함수 이용
+select min(Doctor), min(Professor), min(Singer), min(Actor)
+from
+(Select  RANK() OVER(PARTITION BY occupation ORDER BY name) rank,
+    case OCCUPATION when 'Doctor' then NAME end AS Doctor,
+    case OCCUPATION when 'Professor' then NAME end AS Professor,
+    case OCCUPATION when 'Singer' then NAME end AS Singer,
+    case OCCUPATION when 'Actor' then NAME end AS Actor
+from occupations)
+group by rank
+order by rank;
+
+-- pivot 이용
+select doctor,professor,singer,actor 
+from (
+        select * 
+        from 
+        (
+            select 
+            Name, 
+            occupation, 
+            (ROW_NUMBER() OVER (PARTITION BY occupation ORDER BY name)) as row_num 
+            from occupations order by name asc
+        ) 
+        pivot 
+        ( 
+            min(name) for occupation in 
+            ('Doctor' as doctor,'Professor' as professor,'Singer' as singer,'Actor' as actor)
+        ) 
+        order by row_num
+    );
+    
+
+-- New Companies
+-- conglomerate corporation - 대기업
+-- Given the table schemas below, write a query to print the company_code, founder name, total number of lead managers, 
+-- total number of senior managers, total number of managers, and total number of employees. Order your output by ascending company_code.
+
+SELECT
+    C.company_code
+    , C.founder
+    , COUNT(*)
+    , L.NUM
+    , S.NUM
+    , M.NUM
+FROM Company C
+JOIN (
+        SELECT
+            company_code
+            , COUNT(*) NUM
+        FROM Lead_Manager
+        GROUP BY company_code
+    ) L ON C.company_code = L.company_code
+JOIN (
+        SELECT
+            company_code
+            , COUNT(*) NUM
+        FROM Senior_Manager
+        GROUP BY company_code
+    ) S ON C.company_code = S.company_code
+JOIN (
+        SELECT
+            company_code
+            , COUNT(*) NUM
+        FROM Manager
+        GROUP BY company_code
+    ) M ON C.company_code = M.company_code
+GROUP BY C.company_code, C.founder, L.NUM, S.NUM, M.NUM
+ORDER BY C.company_code;
+
+-- 이게 맞는거 같음
+SELECT
+    C.company_code
+    , C.founder
+    , COUNT(DISTINCT L.lead_manager_code)
+    , COUNT(DISTINCT S.senior_manager_code)
+    , COUNT(DISTINCT M.manager_code)
+    , COUNT(DISTINCT E.employee_code)
+FROM Company C
+JOIN Lead_Manager L ON C.company_code = L.company_code
+JOIN Senior_Manager S ON L.lead_manager_code = S.lead_manager_code
+JOIN Manager M ON S.senior_manager_code= M.senior_manager_code
+JOIN Employee E ON M.manager_code = E.manager_code
+GROUP  BY C.company_code, C.founder
+ORDER BY 1;

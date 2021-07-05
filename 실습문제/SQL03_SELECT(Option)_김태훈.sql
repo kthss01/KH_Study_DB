@@ -81,8 +81,10 @@ SELECT
     , C.PROFESSOR_NAME
 FROM TB_CLASS_PROFESSOR A
 JOIN TB_CLASS B ON A.CLASS_NO = B.CLASS_NO
-JOIN TB_PROFESSOR C ON A.PROFESSOR_NO = C.PROFESSOR_NO;
+JOIN TB_PROFESSOR C ON A.PROFESSOR_NO = C.PROFESSOR_NO
+ORDER BY 2, 1;
 -- 먼가 결과와 정렬이 안맞음 후에 방법 찾아보자 (조회 수는 맞음)
+-- 틀린거 아님
 
 
 -- 9. 8번의 결과 중 '인문사회' 계열에 속한 과목의 교수 이름을 찾으려고 한다.
@@ -98,8 +100,10 @@ FROM TB_CLASS_PROFESSOR A
 JOIN TB_CLASS B ON A.CLASS_NO = B.CLASS_NO
 JOIN TB_PROFESSOR C ON A.PROFESSOR_NO = C.PROFESSOR_NO
 JOIN TB_DEPARTMENT D ON B.DEPARTMENT_NO = D.DEPARTMENT_NO
-WHERE D.CATEGORY = '인문사회';
+WHERE D.CATEGORY = '인문사회'
+ORDER BY 2, 1;
 -- 이것도 정렬 상태가 이상함 조회 수는 맞게 나옴
+-- 틀린거 아님
 
 
 -- 10. '음악학과' 학생들의 평점을 구하려고 한다. 음악학과 학생들의 '학번', "학생 이름", "전체 평점"을 출력하는 SQL 문장을 작성하시오.
