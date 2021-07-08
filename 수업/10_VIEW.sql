@@ -6,7 +6,7 @@
 --VIEW 를 한번 만들어두고 마치 테이블처럼 사용한다고 생각!
 --CREATE [OR REPLACE] VIEW 뷰이름 AS 서브쿼리 
 
---[OR REPLACE]: 뷰 생성시 기존에 중복된 뷰가 있다면 해당뷰를 변경하고 기존에 중복된 뷰가 없다면 새로 뷰를 생성
+--[OR REPLACE]: 뷰 생성시 기존에 중복된 뷰가 있다면 해당 뷰를 변경하고 기존에 중복된 뷰가 없다면 새로 뷰를 생성
 GRANT CREATE VIEW TO EMPLOYEE; -- 뷰를 생성할 수 있는 권한 주기
 
 CREATE OR REPLACE VIEW V_EMP -- EMPLOYEE 계정으로 넘어와서 실행

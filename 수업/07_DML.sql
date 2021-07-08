@@ -23,7 +23,7 @@
 */
 
 
-SELECT  * FROM USER_TABLES; --테이블의정보
+SELECT * FROM USER_TABLES; -- 테이블의정보
 SELECT * FROM USER_TAB_COLUMNS; --테이블내컬럼정보
 SELECT * FROM USER_VIEWS;--뷰정보
 SELECT * FROM USER_CONSTRAINTS;--테이블의 제약조건 검색
@@ -37,13 +37,13 @@ SELECT * FROM USER_CONS_COLUMNS;--컬럼의 제약조건 검색
 --   삭제하거나, 조회하는 언어
 
 
---INSERT : 새로운행을 추가하는 구문이다. 
+--INSERT : 새로운 행을 추가하는 구문이다. 
 --         테이블의 행의 갯수가 증가한다. 
 
 -- 테이블에 모든 컬럼에 대해 값을 INSERT
 -- INSERT INTO 테이블명  VALUES(데이터, 데이터,,,,...)
 
--- 테이블에 일부컬럼에대해 INSERT
+-- 테이블에 일부 컬럼에 대해 INSERT
 -- INSERT INTO 테이블명(컬럼명, 컬럼명, 컬럼명,....)  VALUES(데이터, 데이터,데이터,,,...)
 
 --컬럼 많으면 열에서 복사해서 이렇게 쓸 수도 있음
