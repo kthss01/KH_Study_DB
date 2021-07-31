@@ -232,7 +232,7 @@ SELECT ROUND(123.456, 1) FROM DUAL; -- 소수점 첫째자리까지
 SELECT ROUND(123.456, 2) FROM DUAL; -- 소수점 둘째자리까지
 SELECT ROUND(123.456, -2) FROM DUAL; -- 소수점 기준 왼쪽으로 -2 : 십의 자리
 
--- FLOOR(숫자 | 숫자로도니 컬럼명)
+-- FLOOR(숫자 | 숫자로된 컬럼명)
 -- : 내림처리하는 함수 (인자로 전달받은 숫자 혹은 컬럼의 소수점 자리수를 버리는 함수)
 SELECT FLOOR(123.456) FROM DUAL;
 SELECT FLOOR(123.678) FROM DUAL;

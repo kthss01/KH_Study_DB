@@ -339,7 +339,7 @@ WHERE DEPT_CODE NOT IN ('D6', 'D9');
 --3. 비교연산자
 --4. IS NULL / IS NOT NULL / LIKE / NOT LIKE / IN / NOT IN
 --5. BETWEEN AND / NOT BETWEEN AND
---6. NOT(논리연자)
+--6. NOT(논리연산자)
 --7. AND
 --8. OR
 
